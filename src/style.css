@@ -1,0 +1,36 @@
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.main--container {
+  display: grid;
+  place-content: center;
+  gap: 3rem;
+}
+
+.cards--container {
+  display: grid;
+  justify-self: center;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.card-image {
+  padding: 0.5rem;
+  border: 1px solid black;
+  border-radius: 7px;
+  height: 100px;
+  width: 100px;
+  cursor: pointer;
+}
+
+.header {
+  font-size: 4rem;
+}
+
+.gameInstructions {
+  font-size: 1.2rem;
+}
