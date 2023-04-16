@@ -3,7 +3,7 @@ import Title from "./Title";
 import Cards from "./Cards";
 import cardData from "../cardData";
 
-// ? Why is allCards not logging the correct data that I need?
+// Todo: Player selects a card; change card imageVisibility property to opposite (hidden/show) based on the current condition of play.
 
 function Main() {
   const [allCards, setAllCards] = React.useState(duplicateAllCards);
@@ -11,12 +11,11 @@ function Main() {
   const toggleCardVisibility = (event) => {
     setAllCards((prevCards) =>
       prevCards.map((card) => {
-        return card.id === event.target.id
+        return parseInt(event.target.id) === card.id
           ? { ...card, imageVisibility: !card.imageVisibility }
           : card;
       })
     );
-    console.log(allCards);
   };
 
   const handleClick = (event) => {
@@ -25,12 +24,12 @@ function Main() {
 
   function duplicateAllCards() {
     const duplicateCards = [cardData, cardData];
-    const shuffleCards = duplicateCards.map((array) => {
-      const newArray = [...array];
-      return shuffleAllCards(newArray);
+    const shuffledCards = duplicateCards.map((card) => {
+      const newCardArray = [...card];
+      return shuffleAllCards(newCardArray);
     });
-    const combineCards = [...shuffleCards[0], ...shuffleCards[1]];
-    return combineCards;
+    const combinedCards = [...shuffledCards[0], ...shuffledCards[1]];
+    return combinedCards;
   }
 
   // Fisher-Yates shuffle algorithm:
