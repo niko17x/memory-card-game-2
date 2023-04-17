@@ -5,44 +5,22 @@ function Cards(props) {
     const allCards = [];
     props.newCards.map((card, index) =>
       allCards.push(
-        <img
-          className="card-image"
-          key={index}
-          src={card.url}
-          alt=""
-          onClick={props.handleClick}
-          image-visibility={card.imageVisibility}
-        />
+        <div className="card-outline" key={index}>
+          <img
+            className="card-image"
+            id={card.id}
+            src={card.url}
+            alt=""
+            data-uuid={card.dataUuid}
+            onClick={props.handleClick}
+            style={{ opacity: card.imageVisibility ? 100 : 0 }}
+          />
+        </div>
       )
     );
-
-    // const duplicateAllCards = [allCards, allCards];
-    // const shuffledDuplicateAllCards = duplicateAllCards.map((array) => {
-    //   const newArray = [...array];
-    //   return shuffleAllCards(newArray);
-    // });
-
+    // console.log(allCards);
     return allCards;
   };
-
-  // // Fisher-Yates shuffle algorithm:
-  // const shuffleAllCards = (array) => {
-  //   let currentIndex = array.length;
-  //   let temporaryValue, randomIndex;
-
-  //   // While there remain elements to shuffle...
-  //   while (currentIndex !== 0) {
-  //     // Pick a remaining element...
-  //     randomIndex = Math.floor(Math.random() * currentIndex);
-  //     currentIndex -= 1;
-
-  //     // And swap it with the current element.
-  //     temporaryValue = array[currentIndex];
-  //     array[currentIndex] = array[randomIndex];
-  //     array[randomIndex] = temporaryValue;
-  //   }
-  //   return array;
-  // };
 
   return <div className="cards--container">{renderCardData()}</div>;
 }

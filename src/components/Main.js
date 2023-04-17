@@ -2,24 +2,24 @@ import React from "react";
 import Title from "./Title";
 import Cards from "./Cards";
 import cardData from "../cardData";
-
-// Todo: Player selects a card; change card imageVisibility property to opposite (hidden/show) based on the current condition of play.
+import { v4 as uuidv4 } from "uuid";
 
 function Main() {
-  const [allCards, setAllCards] = React.useState(duplicateAllCards);
+  const [allCards, setAllCards] = React.useState(duplicateAllCards());
+
+  const handleClick = (event) => {
+    toggleCardVisibility(event);
+  };
 
   const toggleCardVisibility = (event) => {
+    const getUuid = event.target.getAttribute("data-uuid");
     setAllCards((prevCards) =>
       prevCards.map((card) => {
-        return parseInt(event.target.id) === card.id
+        return getUuid === card.dataUuid
           ? { ...card, imageVisibility: !card.imageVisibility }
           : card;
       })
     );
-  };
-
-  const handleClick = (event) => {
-    toggleCardVisibility(event);
   };
 
   function duplicateAllCards() {
@@ -29,7 +29,13 @@ function Main() {
       return shuffleAllCards(newCardArray);
     });
     const combinedCards = [...shuffledCards[0], ...shuffledCards[1]];
-    return combinedCards;
+    return addUuid(combinedCards);
+  }
+
+  function addUuid(cards) {
+    let result = [];
+    cards.map((card) => result.push({ ...card, dataUuid: uuidv4() }));
+    return result;
   }
 
   // Fisher-Yates shuffle algorithm:
