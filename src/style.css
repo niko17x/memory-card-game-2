@@ -18,13 +18,17 @@
   gap: 1rem;
 }
 
-.card-image {
-  padding: 0.5rem;
+.card-outline {
   border: 1px solid black;
   border-radius: 7px;
+}
+
+.card-image {
+  padding: 0.5rem;
   height: 100px;
   width: 100px;
   cursor: pointer;
+  /* visibility: hidden; */
 }
 
 .header {
