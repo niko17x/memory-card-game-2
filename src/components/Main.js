@@ -4,10 +4,15 @@ import Cards from "./Cards";
 import cardData from "../cardData";
 import { v4 as uuidv4 } from "uuid";
 
+window.addEventListener("click", (e) => {
+  console.log(e.target);
+});
+
 function Main() {
   const [allCards, setAllCards] = React.useState(duplicateAllCards());
   const [cardInPlayId, setCardInPlayId] = React.useState(null);
   const [gameStatus, setGameStatus] = React.useState(false);
+  const [wrongMoveCount, setWrongMoveCount] = React.useState(0);
 
   const currentCardInPlay = React.useRef(false);
   const firstCardUuid = React.useRef(null);
@@ -30,15 +35,14 @@ function Main() {
       currentCardInPlay.current = true;
       firstCardUuid.current = getFirstUuid;
     } else {
-      matchingCards(event);
+      areCardsMatching(event);
       currentCardInPlay.current = false;
     }
     cardVisibilityOn(event);
   };
 
-  function matchingCards(event) {
-    const getSecondUuid = event.target.getAttribute("data-uuid");
-    secondCardUuid.current = getSecondUuid;
+  function areCardsMatching(event) {
+    secondCardUuid.current = event.target.getAttribute("data-uuid");
     const selectFirstCardUuid = document.querySelector(
       `[data-uuid="${firstCardUuid.current}"]`
     );
@@ -48,7 +52,39 @@ function Main() {
     if (event.target.id === cardInPlayId) {
       selectFirstCardUuid.style.pointerEvents = "none";
       selectSecondCardUuid.style.pointerEvents = "none";
+    } else {
+      clickedWrongCard(event);
+      setWrongMoveCount(wrongMoveCount + 1);
     }
+  }
+
+  function clickedWrongCard(event) {
+    temporarilyPreventCardClick();
+    setTimeout(() => {
+      setAllCards((prevCards) => {
+        const updatedCards = prevCards.map((cards) => {
+          if (parseInt(event.target.id) === cards.id) {
+            return { ...cards, imageVisibility: false };
+          } else if (parseInt(cardInPlayId) === cards.id) {
+            return { ...cards, imageVisibility: false };
+          } else {
+            return cards;
+          }
+        });
+        return updatedCards;
+      });
+    }, 3000);
+  }
+
+  function temporarilyPreventCardClick() {
+    allCards.forEach((card) => {
+      const selector = document.querySelector(`[data-uuid="${card.dataUuid}"]`);
+      selector.style.pointerEvents = "none";
+
+      setTimeout(() => {
+        selector.style.pointerEvents = "auto";
+      }, 3000);
+    });
   }
 
   const cardVisibilityOn = (event) => {
