@@ -6,17 +6,57 @@ import { v4 as uuidv4 } from "uuid";
 
 function Main() {
   const [allCards, setAllCards] = React.useState(duplicateAllCards());
+  const [cardInPlayId, setCardInPlayId] = React.useState(null);
+  const [gameStatus, setGameStatus] = React.useState(false);
+
+  const currentCardInPlay = React.useRef(false);
+  const firstCardUuid = React.useRef(null);
+  const secondCardUuid = React.useRef(null);
+
+  React.useEffect(() => {
+    checkGameWin();
+  }, [allCards]);
+
+  // Check for game win if allCards imageVisibility is set to true.
+  function checkGameWin() {
+    const allCardsAreVisible = allCards.every((card) => card.imageVisibility);
+    return allCardsAreVisible ? setGameStatus(true) : null;
+  }
 
   const handleClick = (event) => {
-    toggleCardVisibility(event);
+    if (!currentCardInPlay.current) {
+      const getFirstUuid = event.target.getAttribute("data-uuid");
+      setCardInPlayId(event.target.id);
+      currentCardInPlay.current = true;
+      firstCardUuid.current = getFirstUuid;
+    } else {
+      matchingCards(event);
+      currentCardInPlay.current = false;
+    }
+    cardVisibilityOn(event);
   };
 
-  const toggleCardVisibility = (event) => {
+  function matchingCards(event) {
+    const getSecondUuid = event.target.getAttribute("data-uuid");
+    secondCardUuid.current = getSecondUuid;
+    const selectFirstCardUuid = document.querySelector(
+      `[data-uuid="${firstCardUuid.current}"]`
+    );
+    const selectSecondCardUuid = document.querySelector(
+      `[data-uuid="${secondCardUuid.current}"]`
+    );
+    if (event.target.id === cardInPlayId) {
+      selectFirstCardUuid.style.pointerEvents = "none";
+      selectSecondCardUuid.style.pointerEvents = "none";
+    }
+  }
+
+  const cardVisibilityOn = (event) => {
     const getUuid = event.target.getAttribute("data-uuid");
     setAllCards((prevCards) =>
       prevCards.map((card) => {
         return getUuid === card.dataUuid
-          ? { ...card, imageVisibility: !card.imageVisibility }
+          ? { ...card, imageVisibility: true }
           : card;
       })
     );
@@ -57,6 +97,7 @@ function Main() {
 
   return (
     <div className="main--container">
+      {gameStatus ? console.log("Game is over") : null}
       <Title />
       <Cards newCards={allCards} handleClick={handleClick} />
     </div>
