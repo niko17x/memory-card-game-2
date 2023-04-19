@@ -13,7 +13,7 @@ function Cards(props) {
             alt=""
             data-uuid={card.dataUuid}
             onClick={props.handleClick}
-            style={{ opacity: card.imageVisibility ? 100 : 0 }}
+            style={{ opacity: card.imageVisibility ? "100" : "20%" }}
           />
         </div>
       )
