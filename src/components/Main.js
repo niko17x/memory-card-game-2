@@ -6,7 +6,7 @@ import cardData from "../cardData";
 import { v4 as uuidv4 } from "uuid";
 
 window.addEventListener("click", (e) => {
-  // console.log(e.target);
+  console.log(e.target);
 });
 
 function Main() {
@@ -23,28 +23,57 @@ function Main() {
     checkGameWin();
   }, [allCards]);
 
+  React.useEffect(() => {
+    disableClicksBeforeGameOn();
+    preventClickWhenAllCardsVisible();
+  }, [gameOn]);
+
+  function disableClicksBeforeGameOn() {
+    allCards.forEach((cards) => {
+      const selector = document.querySelector(
+        `[data-uuid="${cards.dataUuid}"]`
+      );
+      if (gameOn) {
+        selector.style.pointerEvents = "auto";
+      } else {
+        selector.style.pointerEvents = "none";
+      }
+    });
+  }
+
   function checkGameWin() {
     const allCardsPaired = allCards.every((card) => card.imageVisibility);
     return allCardsPaired && !gameOn ? setGameOn(false) : null;
   }
 
+  function preventClickWhenAllCardsVisible() {
+    const allCardsRevealed = allCards.every((card) => card.imageVisibility);
+    if (allCardsRevealed) {
+      temporarilyPreventCardClick(5000);
+    }
+  }
+
   function handleStartGameButton(event) {
     if (event.target.classList.contains("start-game-button")) {
       if (!gameOn) {
-        setAllCards(
-          (prevCards) =>
-            prevCards.map((card) => ({ ...card, imageVisibility: true })),
-          setTimeout(() => {
-            setAllCards((prevCards) =>
-              prevCards.map((card) => ({ ...card, imageVisibility: false }))
-            );
-          }, 5000)
-        );
+        temporarilyRevealCards();
         setGameOn(true);
       } else {
         resetGameState();
       }
     }
+  }
+
+  function temporarilyRevealCards() {
+    setAllCards(
+      (prevCards) =>
+        prevCards.map((card) => ({ ...card, imageVisibility: true })),
+      setTimeout(() => {
+        setAllCards((prevCards) =>
+          prevCards.map((card) => ({ ...card, imageVisibility: false }))
+        );
+      }, 5000)
+    );
   }
 
   function resetGameState() {
@@ -62,7 +91,7 @@ function Main() {
   };
 
   function renderCardClicks(event) {
-    if (!currentCardInPlay.current) {
+    if (!currentCardInPlay.current && gameOn) {
       const getFirstUuid = event.target.getAttribute("data-uuid");
       setCardInPlayId(event.target.id);
       currentCardInPlay.current = true;
@@ -92,7 +121,7 @@ function Main() {
   }
 
   function clickedWrongCard(event) {
-    temporarilyPreventCardClick();
+    temporarilyPreventCardClick(3000);
     setTimeout(() => {
       setAllCards((prevCards) => {
         const updatedCards = prevCards.map((cards) => {
@@ -109,14 +138,13 @@ function Main() {
     }, 3000);
   }
 
-  function temporarilyPreventCardClick() {
+  function temporarilyPreventCardClick(seconds) {
     allCards.forEach((card) => {
       const selector = document.querySelector(`[data-uuid="${card.dataUuid}"]`);
       selector.style.pointerEvents = "none";
-
       setTimeout(() => {
         selector.style.pointerEvents = "auto";
-      }, 3000);
+      }, seconds);
     });
   }
 
