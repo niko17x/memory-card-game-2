@@ -1,17 +1,18 @@
 import React from "react";
 import Title from "./Title";
 import Cards from "./Cards";
+import StartGameButton from "./StartGameButton";
 import cardData from "../cardData";
 import { v4 as uuidv4 } from "uuid";
 
 window.addEventListener("click", (e) => {
-  console.log(e.target);
+  // console.log(e.target);
 });
 
 function Main() {
   const [allCards, setAllCards] = React.useState(duplicateAllCards());
   const [cardInPlayId, setCardInPlayId] = React.useState(null);
-  const [gameStatus, setGameStatus] = React.useState(false);
+  const [gameOn, setGameOn] = React.useState(false);
   const [wrongMoveCount, setWrongMoveCount] = React.useState(0);
 
   const currentCardInPlay = React.useRef(false);
@@ -22,13 +23,45 @@ function Main() {
     checkGameWin();
   }, [allCards]);
 
-  // Check for game win if allCards imageVisibility is set to true.
   function checkGameWin() {
-    const allCardsAreVisible = allCards.every((card) => card.imageVisibility);
-    return allCardsAreVisible ? setGameStatus(true) : null;
+    const allCardsPaired = allCards.every((card) => card.imageVisibility);
+    return allCardsPaired && !gameOn ? setGameOn(false) : null;
+  }
+
+  function handleStartGameButton(event) {
+    if (event.target.classList.contains("start-game-button")) {
+      if (!gameOn) {
+        setAllCards(
+          (prevCards) =>
+            prevCards.map((card) => ({ ...card, imageVisibility: true })),
+          setTimeout(() => {
+            setAllCards((prevCards) =>
+              prevCards.map((card) => ({ ...card, imageVisibility: false }))
+            );
+          }, 5000)
+        );
+        setGameOn(true);
+      } else {
+        resetGameState();
+      }
+    }
+  }
+
+  function resetGameState() {
+    setAllCards(duplicateAllCards());
+    setCardInPlayId(null);
+    setGameOn(false);
+    setWrongMoveCount(0);
+    currentCardInPlay.current = false;
+    firstCardUuid.current = null;
+    secondCardUuid.current = null;
   }
 
   const handleClick = (event) => {
+    renderCardClicks(event);
+  };
+
+  function renderCardClicks(event) {
     if (!currentCardInPlay.current) {
       const getFirstUuid = event.target.getAttribute("data-uuid");
       setCardInPlayId(event.target.id);
@@ -39,7 +72,7 @@ function Main() {
       currentCardInPlay.current = false;
     }
     cardVisibilityOn(event);
-  };
+  }
 
   function areCardsMatching(event) {
     secondCardUuid.current = event.target.getAttribute("data-uuid");
@@ -133,9 +166,12 @@ function Main() {
 
   return (
     <div className="main--container">
-      {gameStatus ? console.log("Game is over") : null}
       <Title />
       <Cards newCards={allCards} handleClick={handleClick} />
+      <StartGameButton
+        handleClick={handleStartGameButton}
+        buttonMessage={!gameOn ? "Start Game" : "Restart Game"}
+      />
     </div>
   );
 }
