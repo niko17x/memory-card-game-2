@@ -49,7 +49,7 @@ function Main() {
   function preventClickWhenAllCardsVisible() {
     const allCardsRevealed = allCards.every((card) => card.imageVisibility);
     if (allCardsRevealed) {
-      temporarilyPreventCardClick(5000);
+      temporarilyPreventAllCardClicks(5000);
     }
   }
 
@@ -91,19 +91,19 @@ function Main() {
   };
 
   function renderCardClicks(event) {
+    const getFirstUuid = event.target.getAttribute("data-uuid");
     if (!currentCardInPlay.current && gameOn) {
-      const getFirstUuid = event.target.getAttribute("data-uuid");
       setCardInPlayId(event.target.id);
       currentCardInPlay.current = true;
       firstCardUuid.current = getFirstUuid;
     } else {
-      areCardsMatching(event);
+      areCardsMatching(event, getFirstUuid);
       currentCardInPlay.current = false;
     }
     cardVisibilityOn(event);
   }
 
-  function areCardsMatching(event) {
+  function areCardsMatching(event, firstUuid) {
     secondCardUuid.current = event.target.getAttribute("data-uuid");
     const selectFirstCardUuid = document.querySelector(
       `[data-uuid="${firstCardUuid.current}"]`
@@ -111,7 +111,9 @@ function Main() {
     const selectSecondCardUuid = document.querySelector(
       `[data-uuid="${secondCardUuid.current}"]`
     );
-    if (event.target.id === cardInPlayId) {
+    if (firstUuid === firstCardUuid.current) {
+      return null;
+    } else if (event.target.id === cardInPlayId) {
       selectFirstCardUuid.style.pointerEvents = "none";
       selectSecondCardUuid.style.pointerEvents = "none";
     } else {
@@ -121,7 +123,7 @@ function Main() {
   }
 
   function clickedWrongCard(event) {
-    temporarilyPreventCardClick(3000);
+    temporarilyPreventAllCardClicks(3000);
     setTimeout(() => {
       setAllCards((prevCards) => {
         const updatedCards = prevCards.map((cards) => {
@@ -138,7 +140,7 @@ function Main() {
     }, 3000);
   }
 
-  function temporarilyPreventCardClick(seconds) {
+  function temporarilyPreventAllCardClicks(seconds) {
     allCards.forEach((card) => {
       const selector = document.querySelector(`[data-uuid="${card.dataUuid}"]`);
       selector.style.pointerEvents = "none";
