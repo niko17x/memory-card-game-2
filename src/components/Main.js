@@ -54,13 +54,17 @@ function Main() {
   }
 
   function handleStartGameButton(event) {
-    if (event.target.classList.contains("start-game-button")) {
-      if (!gameOn) {
-        temporarilyRevealCards();
-        setGameOn(true);
-      } else {
-        resetGameState();
-      }
+    const startGameButton = event.target;
+    if (!startGameButton.classList.contains("start-game-button")) return;
+    if (!gameOn) {
+      temporarilyRevealCards();
+      setGameOn(true);
+      startGameButton.style.pointerEvents = "none";
+      setTimeout(() => {
+        startGameButton.style.pointerEvents = "auto";
+      }, 5000);
+    } else {
+      resetGameState();
     }
   }
 
