@@ -2,11 +2,12 @@ import React from "react";
 import Title from "./Title";
 import Cards from "./Cards";
 import StartGameButton from "./StartGameButton";
+import DisplayCounters from "./DisplayCounters";
 import cardData from "../cardData";
 import { v4 as uuidv4 } from "uuid";
 
 window.addEventListener("click", (e) => {
-  console.log(e.target);
+  // console.log(e.target);
 });
 
 function Main() {
@@ -14,19 +15,29 @@ function Main() {
   const [cardInPlayId, setCardInPlayId] = React.useState(null);
   const [gameOn, setGameOn] = React.useState(false);
   const [wrongMoveCount, setWrongMoveCount] = React.useState(0);
+  const [gameTimer, setGameTimer] = React.useState(0);
+  // const [timerRunning, setTimerRunning] = React.useState(false);
 
   const currentCardInPlay = React.useRef(false);
   const firstCardUuid = React.useRef(null);
   const secondCardUuid = React.useRef(null);
 
   React.useEffect(() => {
-    checkGameWin();
+    return checkGameWin() ? setGameOn(false) : undefined;
   }, [allCards]);
 
   React.useEffect(() => {
     disableClicksBeforeGameOn();
     preventClickWhenAllCardsVisible();
+    return gameOn ? timer() : undefined;
   }, [gameOn]);
+
+  function timer() {
+    const interval = setInterval(() => {
+      setGameTimer((prevTime) => prevTime + 1);
+    }, 1000);
+    return () => clearInterval(interval);
+  }
 
   function disableClicksBeforeGameOn() {
     allCards.forEach((cards) => {
@@ -43,7 +54,7 @@ function Main() {
 
   function checkGameWin() {
     const allCardsPaired = allCards.every((card) => card.imageVisibility);
-    return allCardsPaired && !gameOn ? setGameOn(false) : null;
+    return allCardsPaired && gameTimer > 6 ? true : false;
   }
 
   function preventClickWhenAllCardsVisible() {
@@ -56,6 +67,7 @@ function Main() {
   function handleStartGameButton(event) {
     const startGameButton = event.target;
     if (!startGameButton.classList.contains("start-game-button")) return;
+    if (checkGameWin()) resetGameState();
     if (!gameOn) {
       temporarilyRevealCards();
       setGameOn(true);
@@ -88,6 +100,7 @@ function Main() {
     currentCardInPlay.current = false;
     firstCardUuid.current = null;
     secondCardUuid.current = null;
+    setGameTimer(0);
   }
 
   const handleClick = (event) => {
@@ -201,6 +214,7 @@ function Main() {
   return (
     <div className="main--container">
       <Title />
+      <DisplayCounters gameTimer={gameTimer} errors={wrongMoveCount} />
       <Cards newCards={allCards} handleClick={handleClick} />
       <StartGameButton
         handleClick={handleStartGameButton}
