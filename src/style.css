@@ -2,6 +2,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  user-select: none;
 }
 
 .main--container {
@@ -16,19 +17,27 @@
   grid-template-columns: repeat(4, 1fr);
   grid-template-rows: repeat(3, 1fr);
   gap: 1rem;
+  width: 100%;
 }
 
 .card-outline {
-  border: 1px solid black;
-  border-radius: 7px;
+  display: grid;
+  border: 2.2px solid rgb(114, 114, 114);
+  border-radius: 5px;
+}
+
+.card-outline:hover {
+  box-shadow: 0 0 10px cornflowerblue, 0 0 0px cornflowerblue, 0 0 0px cornflowerblue, 0 0 20px cornflowerblue;
+  transition: box-shadow .2s;
 }
 
 .card-image {
+  place-self: center;
   padding: 0.5rem;
   height: 100px;
   width: 100px;
   cursor: pointer;
-  /* visibility: hidden; */
+  -webkit-user-drag: none;
 }
 
 .header {
@@ -37,4 +46,67 @@
 
 .gameInstructions {
   font-size: 1.2rem;
+}
+
+.start-game-button {
+  background-color: #FFFFFF;
+  border: 3px solid #222222;
+  border-radius: 8px;
+  box-sizing: border-box;
+  color: #222222;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 20px;
+  margin: 0;
+  outline: none;
+  padding: 13px 23px;
+  position: relative;
+  text-align: center;
+  text-decoration: none;
+  touch-action: manipulation;
+  transition: box-shadow .2s,-ms-transform .1s,-webkit-transform .1s,transform .1s;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.start-game-button:focus-visible {
+  box-shadow: #222222 0 0 0 2px, rgba(255, 255, 255, 0.8) 0 0 0 4px;
+  transition: box-shadow .2s;
+}
+
+.start-game-button:active {
+  background-color: #F7F7F7;
+  border-color: #000000;
+  transform: scale(.96);
+}
+
+.start-game-button:disabled {
+  border-color: #DDDDDD;
+  color: #DDDDDD;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+.display-counters-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.display-text {
+  font-size: 3rem;
+  border-bottom: 1px solid black;
+}
+
+.display-errors,
+.display-timer {
+  display: grid;
+  place-self: center;
+}
+
+.error-data,
+.clock-data {
+  font-size: 2rem;
+  place-self: center;
 }
