@@ -5,7 +5,7 @@ function Cards(props) {
     const allCards = [];
     props.newCards.map((card, index) =>
       allCards.push(
-        <div className="card-outline" key={index}>
+        <div className="card-outline card-front" key={index} id={card.id}>
           <img
             className="card-image"
             id={card.id}
@@ -13,8 +13,9 @@ function Cards(props) {
             alt=""
             data-uuid={card.dataUuid}
             onClick={props.handleClick}
-            style={{ opacity: card.imageVisibility ? "100" : "0" }}
+            style={{ opacity: card.imageVisibility ? "100" : "10%" }}
           />
+          <div className="card-back"></div>
         </div>
       )
     );
